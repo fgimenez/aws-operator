@@ -502,7 +502,7 @@ func (s *Service) onAdd(obj interface{}) {
 		}
 		keyPairCreated, err = keyPair.CreateIfNotExists()
 		if err != nil {
-			s.logger.Log("error", fmt.Sprintf("could not create keypair: %s", errgo.Details(err)))
+			s.logger.Log("error", fmt.Sprintf("[%s]: could not create keypair: %s", clusterID, errgo.Details(err)))
 			return
 		}
 	}
