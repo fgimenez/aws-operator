@@ -560,25 +560,16 @@ func (s *Service) onAdd(obj interface{}) {
 
 	// Create S3 bucket
 	var bucket resources.ReusableResource
-	var bucketCreated bool
-	{
-		var err error
-		bucket = &awsresources.Bucket{
-			Name:      bucketName,
-			AWSEntity: awsresources.AWSEntity{Clients: clients},
-		}
-		bucketCreated, err = bucket.CreateIfNotExists()
-		if err != nil {
-			s.logger.Log("error", fmt.Sprintf("could not create S3 bucket: %s", errgo.Details(err)))
-			return
-		}
+	bucket = &awsresources.Bucket{
+		Name:      bucketName,
+		AWSEntity: awsresources.AWSEntity{Clients: clients},
+	}
+	if err = bucket.CreateOrFail(); err != nil {
+		s.logger.Log("error", fmt.Sprintf("could not create S3 bucket: %s", errgo.Details(err)))
+		return
 	}
 
-	if bucketCreated {
-		s.logger.Log("info", fmt.Sprintf("created bucket '%s'", bucketName))
-	} else {
-		s.logger.Log("info", fmt.Sprintf("bucket '%s' already exists, reusing", bucketName))
-	}
+	s.logger.Log("info", fmt.Sprintf("created bucket '%s'", bucketName))
 
 	// Create VPC
 	var vpc resources.ResourceWithID
@@ -1248,7 +1239,7 @@ func (s *Service) onDelete(obj interface{}) {
 		s.logger.Log("error", errgo.Details(err))
 	}
 
-	s.logger.Log("info", "deleted bucket")
+	s.logger.Log("info", fmt.Sprintf("deleted bucket %s", bucketName))
 
 	// Delete policy.
 	var policy resources.NamedResource
