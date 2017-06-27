@@ -15,10 +15,10 @@ dependencies:
 
 test:
   override:
-    - ./architect --organisation=fgimenez build
+    - ./architect --organisation=giantswarm build
 
 deployment:
   master:
     branch: master
     commands:
-      - ./architect --organisation=fgimenez deploy
+      - ./architect --organisation=giantswarm deploy
